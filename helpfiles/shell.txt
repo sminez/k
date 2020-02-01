@@ -1,0 +1,9 @@
+# This should all work
+? test,shell,example
+% https://google.com
+
+> Testing testing
+
+$ echo "this should work"
+
+--

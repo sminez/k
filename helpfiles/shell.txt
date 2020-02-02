@@ -1,9 +1,161 @@
-# This should all work
-? test,shell,example
-% https://google.com
+# Bash oneliners
+? bash,cheatsheet,commands,examples
+% https://github.com/onceupon/Bash-Oneliner
 
-> Testing testing
+> This github repo is basically a giant list of useful commands
+> for when you are in the shell. Some of the MORE useful ones
+> have been copied as their own snippets.
+--
 
-$ echo "this should work"
 
+# Common keyboard shortcuts (bash)
+? bash,keybindings,cheatsheet
+% https://github.com/onceupon/Bash-Oneliner#using-ctrl-keys
+
+> Ctrl + n : same as Down arrow.
+> Ctrl + p : same as Up arrow.
+> Ctrl + r : begins a backward search through command history.(keep pressing Ctrl + r to move backward)
+> Ctrl + s : to stop output to terminal.
+> Ctrl + q : to resume output to terminal after Ctrl + s.
+> Ctrl + a : move to the beginning of line.
+> Ctrl + e : move to the end of line.
+> Ctrl + d : if you've type something, Ctrl + d deletes the character under the cursor, else, it escapes the current shell.
+> Ctrl + k : delete all text from the cursor to the end of line.
+> Ctrl + x + backspace : delete all text from the beginning of line to the cursor.
+> Ctrl + t : transpose the character before the cursor with the one under the cursor, press Esc + t to transposes the two words before the cursor.
+> Ctrl + w : cut the word before the cursor; then Ctrl + y paste it
+> Ctrl + u : cut the line before the cursor; then Ctrl + y paste it
+> Ctrl + _ : undo typing.
+> Ctrl + l : equivalent to clear.
+> Ctrl + x + Ctrl + e : launch editor defined by $EDITOR to input your command. Useful for multi-line commands.
+--
+
+# Bash globbing
+? bash,cheatsheet,syntax
+% https://github.com/onceupon/Bash-Oneliner#bash-globbing
+
+> NOTE: These globs will work fine in bash (not sh) shell scripts. In my zsh
+>       terminal these are a little different (I think...)
+
+$ # '*' serves as a "wild card" for filename expansion.
+$ /etc/pa*wd    #/etc/passwd
+$
+$ # '?' serves as a single-character "wild card" for filename expansion.
+$ /b?n/?at      #/bin/cat
+$
+$ # ‘[]’ serves to match the character from a range.
+$ ls -l [a-z]*   #list all files with alphabet in its filename.
+$
+$ # ‘{}’ can be used to match filenames with more than one patterns
+$ ls {*.sh,*.py}   #list all .sh and .py files
+--
+
+# Useful variables when inside a bash process
+? bash,shell,cheatsheet
+% https://github.com/onceupon/Bash-Oneliner#some-handy-environment-variables
+
+> Most of these are well known but there are a few that are easy to forget about
+
+$ $0   :name of shell or shell script.
+$ $1, $2, $3, ... :positional parameters.
+$ $#   :number of positional parameters.
+$ $?   :most recent foreground pipeline exit status.
+$ $-   :current options set for the shell.
+$ $$   :pid of the current shell (not subshell).
+$ $!   :is the PID of the most recent background command.
+--
+
+# I want to know the number of lines in a file matching a pattern
+? grep,command
+% https://github.com/onceupon/Bash-Oneliner#grep-and-count-number-of-empty-lines
+
+$ grep -c "<PATTERN>"
+$ grep -ic "error"    # -i also adds case insensitivity
+--
+
+# I want to grep all files under the current directory
+? grep,command
+
+$ grep -R "<PATTERN>"
+$ grep -iR "error"    # -i also adds case insensitivity
+--
+
+# I want to find text in a file between two known strings
+? grep,command
+% https://github.com/onceupon/Bash-Oneliner#extract-text-between-words-eg-w1w2
+
+> This uses grep with Perl regex enabled in order to get this to work.
+
+$ grep -o -P '(?<=w1).*(?=w2)'
+--
+
+# Remove blank lines from a file
+? sed,delete
+% https://github.com/onceupon/Bash-Oneliner#deleteremove-empty-lines
+
+> This can be used in a pipe to remove blank lines. Remember to use the
+> '-i' flag to modify a file in place if that is what you want
+
+$ sed '/^\s*$/d'
+$ sed '/^$/d'  # alternate
+--
+
+# Output the contents of a file up to the nth occurrence of a pattern
+? awk,command
+% https://github.com/onceupon/Bash-Oneliner#print-all-lines-before-nth-occurrence-of-a-string-eg-stop-print-lines-when-bbo-appears-7-times
+
+> This works by setting an initial count using '-v' to pass through a variable
+> from the shell (in this case, 7). We print all lines (no '/.../' regex means
+> that we match everything) but every time we see the pattern we decrement the
+> counter. Once the counter hits 0 we exit.
+
+$ awk -v N=7 '{ print } /PATTERN/ && --N<=0 { exit }'
+--
+
+# Print all files in a directory along with their first/last line
+? awk,find,command
+% https://github.com/onceupon/Bash-Oneliner#print-filename-and-last-line-of-all-files-in-directory
+
+> This can be done in a number of ways (possibly with 'rg' as well? Worth checking...) but
+> here is an example using awk. I've modified it from the one in the cheatsheet to use 'find'
+> instead of ls so that it doesn't error trying to run for directories and simplified the awk
+> command itself.
+
+$ find . -maxdepth 1 -type f | xargs -n1 -I {} awk -v OFS='\t' 'END { print FILENAME, s }' {}
+$ find . -maxdepth 1 -type f | xargs -n1 -I {} awk -v OFS='\t' 'NR==1 { print FILENAME, $0 }' {}
+--
+
+# Download everything linked to from a given web page
+? wget,download,scrape
+% https://github.com/onceupon/Bash-Oneliner#download-all-from-a-page
+
+> The following command is kind of horrifying but acts kind of as a one stop shop for downloading
+> everything you can find on a single webpage...! Flag explanations:
+>   -r: recursive and download all links on page
+>   -l1: only one level link
+>   -H: span host, visit other hosts
+>   -t1: numbers of retries
+>   -nd: don't make new directories, download to here
+>   -N: turn on timestamp
+>   -nd: no parent
+>   -A: type (separate by ,)
+>   -e robots=off: ignore the robots.txt file which stop wget from crashing the site, sorry example.com
+
+$ wget -r -l1 -H -t1 -nd -N -np -A mp3 -e robots=off http://example.com
+--
+
+# Download an entire website
+? wget,download,scrape
+
+> OK, this one is fantastic:
+>   --recursive:                download the entire web site.
+>   --domains somewebsite.com:  don't follow links outside website.org.
+>   --no-parent:                don't follow links outside the directory some/path/
+>   --page-requisites:          get all the elements that compose the page (images, CSS...)
+>   --convert-links:            convert links so that they work locally, off-line.
+>   --no-clobber:               don't overwrite any existing files (useful if the download is interrupted).
+
+$ wget --recursive --no-clobber --page-requisites \
+$      --convert-links --domains somewebsite.com \
+$      --no-parent www.somewebsite.com/some/path/
 --

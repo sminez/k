@@ -45,9 +45,15 @@ $     print("Regardless of language, code blocks are marked with a shell style $
 ```
 
 ### Todo
-* show all known tags
-* pretty print code snippets with bat?
-  * could also allow marking the language at the head of the snippet?
-* helper for creating new snippets? (probably not needed really)
-* default snippets to include with the repo
-* a way of keeping personal snippets in their own gitignored directory
+* Copy selection to clipboard (no ANSI colors)
+* Copy only code selection to clipboard
+* Multiple helpfile directories
+* Pre-filter on certain tags?
+* Show all tags
+* Pretty print code snippets with bat?
+  * Could also allow marking the language at the head of the snippet?
+* Make the snippet directory more like $PATH to allow for having a default
+  set of snippets and then also optionally including others based on
+  the environment.
+  * e.g. work related snippets, personal information etc
+* Also allow for pulling snippets over the network?...

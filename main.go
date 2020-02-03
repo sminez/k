@@ -1,11 +1,4 @@
 // k - Answers to questions that you have already asked
-//
-// TODO:
-//   - Copy selection to clipboard (no ANSI colors)
-//   - Copy only code selection to clipboard
-//   - Multiple helpfile directories
-//   - Pre-filter on certain tags?
-//   - Dump all tags
 package main
 
 import (

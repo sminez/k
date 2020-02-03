@@ -2,9 +2,9 @@
 ? bash,cheatsheet,commands,examples
 % https://github.com/onceupon/Bash-Oneliner
 
-> This github repo is basically a giant list of useful commands
-> for when you are in the shell. Some of the MORE useful ones
-> have been copied as their own snippets.
+> This github repo is basically a giant list of useful commands for when you
+> are in the shell. Some of the MORE useful ones have been copied as their own
+> snippets.
 --
 
 # Common keyboard shortcuts (bash)
@@ -115,10 +115,10 @@ $ awk -v N=7 '{ print } /PATTERN/ && --N<=0 { exit }'
 ? awk,find,command
 % https://github.com/onceupon/Bash-Oneliner#print-filename-and-last-line-of-all-files-in-directory
 
-> This can be done in a number of ways (possibly with 'rg' as well? Worth checking...) but
-> here is an example using awk. I've modified it from the one in the cheatsheet to use 'find'
-> instead of ls so that it doesn't error trying to run for directories and simplified the awk
-> command itself.
+> This can be done in a number of ways (possibly with 'rg' as well? Worth
+> checking...) but here is an example using awk. I've modified it from the one
+> in the cheatsheet to use 'find' instead of ls so that it doesn't error trying
+> to run for directories and simplified the awk command itself.
 
 $ find . -maxdepth 1 -type f | xargs -n1 -I {} awk -v OFS='\t' 'END { print FILENAME, s }' {}
 $ find . -maxdepth 1 -type f | xargs -n1 -I {} awk -v OFS='\t' 'NR==1 { print FILENAME, $0 }' {}
@@ -128,8 +128,9 @@ $ find . -maxdepth 1 -type f | xargs -n1 -I {} awk -v OFS='\t' 'NR==1 { print FI
 ? wget,download,scrape
 % https://github.com/onceupon/Bash-Oneliner#download-all-from-a-page
 
-> The following command is kind of horrifying but acts kind of as a one stop shop for downloading
-> everything you can find on a single webpage...! Flag explanations:
+> The following command is kind of horrifying but acts kind of as a one stop
+> shop for downloading everything you can find on a single webpage...!
+> Flag explanations:
 >   -r: recursive and download all links on page
 >   -l1: only one level link
 >   -H: span host, visit other hosts

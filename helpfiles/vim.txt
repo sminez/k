@@ -22,10 +22,9 @@ $ nnoremap fd <esc>
 # Oh no! I need sudo to save this file...
 ? vim,sudo,fail,save
 
-> This works as one time command in a pinch but it is
-> worthwhile saving in your vimrc on your host as well
-> in case you run into this situation again. To use the
-> command as a one time thing,
+> This works as one time command in a pinch but it is worthwhile saving in your
+> vimrc on your host as well in case you run into this situation again. To use
+> the command as a one time thing,
 
 $ %!sudo tee > /dev/null %
 $ # Or to save for later use (:w!! from normal mode)
@@ -35,10 +34,9 @@ $ cmap w!! %!sudo tee > /dev/null %
 # The file you are editing has giant lines and j/k is borked
 ? vim,navigation,hjkl,mapping
 
-> By default, vim will navigate according to the lines in
-> the source file, not the _visual_ lines you see in the
-> editor itself. These mappings forces j/k to always move
-> one visual line at a time.
+> By default, vim will navigate according to the lines in the source file, not
+> the _visual_ lines you see in the editor itself. These mappings forces j/k to
+> always move one visual line at a time.
 
 $ nnoremap j gj
 $ nnoremap k gk
@@ -47,9 +45,8 @@ $ nnoremap k gk
 # Quickly insert a line above/below the cursor
 ? vim,mapping,insert
 
-> This will allow you to quickly pad blank lines above / below
-> your current cursor position and still retain the use of
-> t in commands such as 'dt)'
+> This will allow you to quickly pad blank lines above / below your current
+> cursor position and still retain the use of t in commands such as 'dt)'
 
 $ nmap t o<ESC>k  " insert a blank line below
 $ nmap T o<ESC>j  " insert a blank line above
@@ -58,10 +55,9 @@ $ nmap T o<ESC>j  " insert a blank line above
 # Retain selection when indenting lines
 ? vim,indent,mapping,behaviour
 
-> Normally when you indent/dedent a block, vim will drop
-> your visual selection (which is a pain if you are wanting
-> to indent multiple times). This mapping simply re-selects
-> the previous visual selection after indenting.
+> Normally when you indent/dedent a block, vim will drop your visual selection
+> (which is a pain if you are wanting to indent multiple times). This mapping
+> simply re-selects the previous visual selection after indenting.
 
 $ vnoremap < <gv
 $ vnoremap > >gv
@@ -70,9 +66,8 @@ $ vnoremap > >gv
 # Auto enable spellcheck for certain filetypes
 ? vim,spellcheck,autocommand
 
-> This can be done based on the filetype that vim detects
-> when the buffer is loaded or by the file extension of the
-> file that is opened.
+> This can be done based on the filetype that vim detects when the buffer is
+> loaded or by the file extension of the file that is opened.
 
 $ au FileType gitcommit,markdown setlocal spell
 $ au BufRead *.md setlocal spell

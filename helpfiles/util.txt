@@ -13,9 +13,9 @@ $ rm "$tmp"
 # Stop and remove ALL docker images on your host
 ? docker,dangerous,purge,lastresort
 
-> This should only be done in a "well nothing else has worked"
-> style situation. It shouldn't break anything but you'll need
-> to re-pull and rebuild EVERYTHING...
+> This should only be done in a "well nothing else has worked" style situation.
+> It shouldn't break anything but you'll need to re-pull and rebuild
+> EVERYTHING...
 
 > purge-docker.sh
 $ containers=$(sudo docker ps -aq)
@@ -23,4 +23,24 @@ $ images$(sudo docker images -f 'dangling=true' -aq)
 $ sudo docker stop $(containers)
 $ sudo docker rm $(containers)
 $ sudo docker rmi $(images)
+--
+
+# I want to know the keys of a JSON object
+? json,data,parse,process
+
+> Mainly because I can't work out how to get jq to give me anything other than
+> only the top level keys, I wrote this python script. Pipe your JSON data into
+> it to get the keys.
+
+$ #! /usr/bin/env python3
+$ import json, sys
+$
+$ def extract(data):
+$     return {
+$         k: extract(v) if isinstance(v, dict) else ''
+$         for k, v in data.items()
+$     }
+$
+$ data = json.loads(''.join(line for line in sys.stdin))
+$ print(json.dumps(extract(data), sort_keys=True, indent=4))
 --

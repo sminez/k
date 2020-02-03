@@ -57,3 +57,10 @@ $     print("Regardless of language, code blocks are marked with a shell style $
   the environment.
   * e.g. work related snippets, personal information etc
 * Also allow for pulling snippets over the network?...
+
+
+### To write up
+* https://ablagoev.github.io/linux/adventures/commands/2017/02/19/adventures-in-usr-bin.html
+* https://danielmiessler.com/blog/collection-of-less-commonly-used-unix-commands/#gs.xW4fUl4
+* https://jvns.ca/blog/2017/03/26/bash-quirks/
+* https://kkovacs.eu/cool-but-obscure-unix-tools

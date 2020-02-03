@@ -57,7 +57,6 @@ type kServer struct {
 	helpfileDirectory string
 	snippetMap        map[string]*snippet
 	stubs             []string
-	httpServer        *http.Server
 	port              int
 }
 
@@ -220,15 +219,8 @@ func (k *kServer) ansiEscapedFromStub(w http.ResponseWriter, r *http.Request) {
 // [Runs in it's own goroutine]
 // Start a local http server for fzf to call back to in order to render its preview window.
 func (k *kServer) serveHTTP() {
-	router := http.NewServeMux()
-	router.HandleFunc("/", k.ansiEscapedFromStub)
-	port := fmt.Sprintf(":%d", k.port)
-	k.httpServer = &http.Server{
-		Addr:    port,
-		Handler: router,
-	}
-
-	k.httpServer.ListenAndServe()
+	http.HandleFunc("/", k.ansiEscapedFromStub)
+	http.ListenAndServe(fmt.Sprintf("localhost:%d", k.port), nil)
 }
 
 // Kick off fzf as a subprocess

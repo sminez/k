@@ -41,6 +41,7 @@ var (
 	// Flags
 	serverPort      = flag.Int("port", defaultPort, "local port to listen to for preview requests")
 	copyToClipboard = flag.Bool("clip", false, "copy the selected snippet to your clipboard instead of printing")
+	showPreview     = flag.Bool("preview", true, "Enable ANSI color previews while searching within fzf")
 )
 
 // A snippet is an individual entry into the help system that can be
@@ -228,11 +229,18 @@ func (k *kServer) serveHTTP() {
 
 // Kick off fzf as a subprocess and wait for the selection to come back.
 func (k *kServer) runFzf() {
+	var p string
+
+	if *showPreview {
+		p = fmt.Sprintf("--preview %s %s",
+			fmt.Sprintf(previewCmd, k.port),
+			previewPosition,
+		)
+	}
 	s := fmt.Sprintf(
-		"echo '%s' | fzf --preview %s %s",
+		"echo '%s' | fzf %s",
 		strings.Join(k.stubs, "\n"),
-		fmt.Sprintf(previewCmd, k.port),
-		previewPosition,
+		p,
 	)
 	cmd := exec.Command("bash", "-c", s)
 	cmd.Stdin = os.Stdin
@@ -264,6 +272,8 @@ func locateHelpfileDirectories() []string {
 func main() {
 	flag.Parse()
 	k := newKServer(locateHelpfileDirectories(), *serverPort)
-	go k.serveHTTP()
+	if *showPreview {
+		go k.serveHTTP()
+	}
 	k.runFzf()
 }

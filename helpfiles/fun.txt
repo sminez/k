@@ -1,0 +1,15 @@
+# Make a gif from an mp4 file
+? ffmpeg,imgmagik,video,gif
+
+> mkgif.sh
+$ tdir=$(mktemp -d)
+$ ffmpeg -i "$1" -vf scale=320::-1:flags=lanczos,fps=10 "$tdir"/ffout%03d.png
+$ convert -loop 0 "$tdir"/ffout*.png output.gif
+$ rm -rf "$tdir"
+--
+
+# rot13 a string on the command line
+? crypto,silly,tr,1337
+
+$ echo "rot13me" | tr '[A-Za-z]' '[N-ZA-Mn-za-m]'
+--

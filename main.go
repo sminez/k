@@ -37,7 +37,7 @@ const (
 
 	// UI and interaction with fzfo
 	previewCmd      = "\"curl -s -X POST -d \"{}\" 127.0.0.1:%d/\""
-	previewPosition = "--preview-window=up:80%"
+	previewPosition = "--preview-window=up:70%"
 	seperator       = " | " // Delimits sections in the lines passed to fzf
 	yellow          = 33    // ANSI terminal escape sequence
 	blue            = 34    // ANSI terminal escape sequence
@@ -63,6 +63,7 @@ type snippet struct {
 type kServer struct {
 	helpfileDirectory string
 	snippetMap        map[string]*snippet
+	stubs             []string
 	httpServer        *http.Server
 	port              int
 }
@@ -74,7 +75,7 @@ func (s *snippet) String() string {
 	}
 
 	var builder strings.Builder
-	for _, line := range s.lines {
+	for i, line := range s.lines {
 		if len(line) > 0 {
 			switch firstChar := line[0]; firstChar {
 			case titleMarker:
@@ -87,10 +88,11 @@ func (s *snippet) String() string {
 				builder.WriteString(fmt.Sprintf("%s\n", line))
 			}
 		} else {
-			builder.WriteString("\n")
+			if i != 0 {
+				builder.WriteString("\n")
+			}
 		}
 	}
-
 	return builder.String()
 }
 
@@ -168,6 +170,7 @@ func newKServer(helpfileDirectory string, port int) *kServer {
 	ch := make(chan []*snippet)
 	var snippets []*snippet
 	var fileLen, tagLen int
+	var stubs []string
 
 	helpfiles, err := ioutil.ReadDir(helpfileDirectory)
 	if err != nil {
@@ -182,6 +185,7 @@ func newKServer(helpfileDirectory string, port int) *kServer {
 			fileLen = len(noExt)
 		}
 		absPath := path.Join(helpfileDirectory, fname)
+
 		go getSnippetsFromFile(fname, absPath, ch)
 	}
 
@@ -196,25 +200,17 @@ func newKServer(helpfileDirectory string, port int) *kServer {
 	}
 
 	for _, s := range snippets {
-		snippetMap[s.fzfString(fileLen, tagLen)] = s
+		stub := s.fzfString(fileLen, tagLen)
+		stubs = append(stubs, stub)
+		snippetMap[stub] = s
 	}
 
 	return &kServer{
 		helpfileDirectory: helpfileDirectory,
 		snippetMap:        snippetMap,
+		stubs:             stubs,
 		port:              port,
 	}
-}
-
-// get all of the snippet stubs to pass on to fzf to run the match
-func (k *kServer) allStubs() []string {
-	var stubs []string
-
-	for stub := range k.snippetMap {
-		stubs = append(stubs, stub)
-	}
-
-	return stubs
 }
 
 // pretty print the selected snippet based on the stub received
@@ -246,7 +242,7 @@ func (k *kServer) serveHTTP() {
 func (k *kServer) runFzf() {
 	cmdStr := fmt.Sprintf(
 		"echo '%s' | fzf --preview %s %s",
-		strings.Join(k.allStubs(), "\n"),
+		strings.Join(k.stubs, "\n"),
 		fmt.Sprintf(previewCmd, k.port),
 		previewPosition,
 	)

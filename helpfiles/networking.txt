@@ -1,0 +1,20 @@
+# TODO: write up each of these networking commands
+? command,tools,todo
+
+> Group by use case
+
+$ ping curl wget dig whois ngrep tcpdump ip
+$ nc socat telnet scp ftp netstat ss lsof
+$ iptables nftables openssl
+--
+
+# I want to quickly serve files from a local directory
+? python,http,server
+% https://docs.python.org/3.8/library/http.server.html#module-http.server
+
+> Spin up a VERY basic http server that hosts the contents of the current
+> directory if you do not specify one explicitly using the -d flag.
+
+$ python -m SimpleHTTPServer <port>
+$ python3 -m http.server <port> -d /path/to/directory/to/serve
+--

@@ -7,7 +7,6 @@
 > have been copied as their own snippets.
 --
 
-
 # Common keyboard shortcuts (bash)
 ? bash,keybindings,cheatsheet
 % https://github.com/onceupon/Bash-Oneliner#using-ctrl-keys
@@ -158,4 +157,15 @@ $ wget -r -l1 -H -t1 -nd -N -np -A mp3 -e robots=off http://example.com
 $ wget --recursive --no-clobber --page-requisites \
 $      --convert-links --domains somewebsite.com \
 $      --no-parent www.somewebsite.com/some/path/
+--
+
+# Show your current color palette in your terminal
+? zsh,colors,theme
+
+> NOTE: This will only work with zsh
+
+$ for code ({000..255}) {
+$   print -nP -- "$code: %F{$code}%K{$code}Test%k%f ";
+$   (( code % 8 && code < 255 )) || printf '\n'
+$ }
 --

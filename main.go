@@ -16,7 +16,7 @@ import (
 
 const (
 	// Default values for command line options
-	envVarHelpfileDir        = "HELPFILE_DIR"
+	helpfilePath             = "HELPFILE_PATH"
 	defaultHelpfileDirectory = ".helpfiles" // under user homedir
 	defaultPort              = 1992
 
@@ -54,13 +54,13 @@ type snippet struct {
 
 // A kServer handles preview requests from the spawned fzf process.
 type kServer struct {
-	helpfileDirectory string
-	snippetMap        map[string]*snippet
-	stubs             []string
-	port              int
+	snippetMap map[string]*snippet
+	stubs      []string
+	port       int
 }
 
 // Stringify for ANSI escaped pretty printing
+// TODO: This feels kinda dirty as an impl for String()...
 func (s *snippet) String() string {
 	ansiString := func(colorCode int, line string) string {
 		return fmt.Sprintf("\033[1;%dm%s\033[0m\n", colorCode, line)
@@ -91,11 +91,11 @@ func (s *snippet) String() string {
 // Format this snippet for passing on to fzf as a selection
 func (s *snippet) fzfString(fileLen, tagLen int) string {
 	pad := func(n int, s string) string {
-		diff := n - len(s)
-		if n == 0 {
+		k := n - len(s)
+		if k == 0 {
 			return s
 		}
-		return s + strings.Repeat(" ", diff)
+		return s + strings.Repeat(" ", k)
 	}
 
 	var builder strings.Builder
@@ -109,158 +109,161 @@ func (s *snippet) fzfString(fileLen, tagLen int) string {
 }
 
 // build a new snippet struct from a range of lines from a given helpfile
-func newSnippet(file string, lines []string) *snippet {
-	var title, tags string
+func newSnippet(fname string, lines []string) *snippet {
+	s := snippet{
+		file:  strings.TrimRight(fname, ".txt"),
+		lines: lines,
+	}
 
-	for _, line := range lines {
-		if len(line) > 0 {
-			switch firstChar := line[0]; firstChar {
+	for _, l := range lines {
+		if len(l) > 0 {
+			switch c := l[0]; c {
 			case titleMarker:
-				title = line[2:]
+				s.title = l[2:]
 			case tagMarker:
-				tags = line[2:]
+				s.tags = l[2:]
 			}
 		}
 	}
-
-	return &snippet{
-		file:  strings.TrimRight(file, ".txt"),
-		tags:  tags,
-		title: title,
-		lines: lines,
-	}
+	// TODO: We should probably error if title/tags are empty or set twice
+	return &s
 }
 
-// Runs in it's own goroutine
-func getSnippetsFromFile(fname, absPath string, ch chan []*snippet) {
-	var snippets []*snippet
-	var currentLines []string
+// [NOTE: Runs in it's own goroutine]
+// Open up the given file and parse each of the snippets we find. Results are
+// send back on a channel once all snippets are found so that the contents of
+// each helpfile render together when passed on to fzf. This also means that
+// we don't need to do anything clever around signalling to determine when we
+// are done parsing each file: we just wait for each file to be parsed.
+func getSnippetsFromFile(dir, fname string, ch chan []*snippet) {
+	var ss []*snippet
+	var ls []string
 
-	file, err := os.Open(absPath)
+	f, err := os.Open(path.Join(dir, fname))
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line == endOfSectionMarker {
-			snippets = append(snippets, newSnippet(fname, currentLines))
-			currentLines = []string{}
+	defer f.Close()
+	s := bufio.NewScanner(f)
+
+	for s.Scan() {
+		l := s.Text()
+		if l == endOfSectionMarker {
+			ss = append(ss, newSnippet(fname, ls))
+			ls = []string{}
 		} else {
-			currentLines = append(currentLines, line)
+			ls = append(ls, l)
 		}
 	}
-
-	ch <- snippets
+	ch <- ss
 }
 
 // Parallel read all helpfiles and parse into stubs for fzf
-func newKServer(helpfileDirectory string, port int) *kServer {
-	snippetMap := make(map[string]*snippet)
+func newKServer(dirs []string, port int) *kServer {
+	var fl, tl, k int
+	var ss []*snippet
+	var ts []string
+
+	m := make(map[string]*snippet)
 	ch := make(chan []*snippet)
-	var snippets []*snippet
-	var fileLen, tagLen int
-	var stubs []string
 
-	helpfiles, err := ioutil.ReadDir(helpfileDirectory)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Kick off a goroutine for each file to process them in parallel
-	for _, hf := range helpfiles {
-		fname := hf.Name()
-		noExt := strings.TrimRight(fname, ".txt")
-		if len(noExt) > fileLen {
-			fileLen = len(noExt)
+	for _, d := range dirs {
+		fs, err := ioutil.ReadDir(d)
+		if err != nil {
+			log.Fatal(err)
 		}
-		absPath := path.Join(helpfileDirectory, fname)
 
-		go getSnippetsFromFile(fname, absPath, ch)
-	}
-
-	for i := 0; i < len(helpfiles); i++ {
-		ss := <-ch
-		snippets = append(snippets, ss...)
-		for _, s := range ss {
-			if len(s.tags) > tagLen {
-				tagLen = len(s.tags)
+		// NOTE: goro for each file
+		for _, fh := range fs {
+			f := fh.Name()
+			if len(f) > fl {
+				fl = len(f)
 			}
+			go getSnippetsFromFile(d, f, ch)
+			k++
 		}
 	}
 
-	for _, s := range snippets {
-		stub := s.fzfString(fileLen, tagLen)
-		stubs = append(stubs, stub)
-		snippetMap[stub] = s
+	for i := 0; i < k; i++ {
+		ss = append(ss, <-ch...)
+	}
+
+	for _, s := range ss {
+		if len(s.tags) > tl {
+			tl = len(s.tags)
+		}
+	}
+
+	for _, s := range ss {
+		t := s.fzfString(fl-4, tl) // We trim off the '.txt' suffix
+		ts = append(ts, t)
+		m[t] = s
 	}
 
 	return &kServer{
-		helpfileDirectory: helpfileDirectory,
-		snippetMap:        snippetMap,
-		stubs:             stubs,
-		port:              port,
+		snippetMap: m,
+		stubs:      ts,
+		port:       port,
 	}
 }
 
 // pretty print the selected snippet based on the stub received
 func (k *kServer) ansiEscapedFromStub(w http.ResponseWriter, r *http.Request) {
-	stub, err := ioutil.ReadAll(r.Body)
+	s, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Unable to read data from POST body: %s\n", err)
 		return
 	}
 
-	fmt.Fprintf(w, "%s\n", k.snippetMap[string(stub)])
+	fmt.Fprintf(w, "%s\n", k.snippetMap[string(s)])
 }
 
-// [Runs in it's own goroutine]
+// [NOTE: Runs in it's own goroutine]
 // Start a local http server for fzf to call back to in order to render its preview window.
 func (k *kServer) serveHTTP() {
 	http.HandleFunc("/", k.ansiEscapedFromStub)
 	http.ListenAndServe(fmt.Sprintf("localhost:%d", k.port), nil)
 }
 
-// Kick off fzf as a subprocess
+// Kick off fzf as a subprocess and wait for the selection to come back.
 func (k *kServer) runFzf() {
-	cmdStr := fmt.Sprintf(
+	s := fmt.Sprintf(
 		"echo '%s' | fzf --preview %s %s",
 		strings.Join(k.stubs, "\n"),
 		fmt.Sprintf(previewCmd, k.port),
 		previewPosition,
 	)
-	cmd := exec.Command("bash", "-c", cmdStr)
+	cmd := exec.Command("bash", "-c", s)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 
-	stub, err := cmd.Output()
+	t, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(k.snippetMap[strings.TrimRight(string(stub), "\n")])
+	fmt.Println(k.snippetMap[strings.TrimRight(string(t), "\n")])
 }
 
-// Determine where the user's helpfiles are located
-func locateHelpfileDirectory() string {
-	helpfileDirectory, ok := os.LookupEnv(envVarHelpfileDir)
+// Determine where the user's helpfiles are located.
+// $HELPFILE_PATH has the same semantics as $PATH
+func locateHelpfileDirectories() []string {
+	s, ok := os.LookupEnv(helpfilePath)
 	if ok {
-		return helpfileDirectory
+		return strings.Split(s, ":")
 	}
 
-	userHome, err := os.UserHomeDir()
+	h, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	return path.Join(userHome, defaultHelpfileDirectory)
+	return []string{path.Join(h, defaultHelpfileDirectory)}
 }
 
 func main() {
 	flag.Parse()
-	k := newKServer(locateHelpfileDirectory(), *serverPort)
+	k := newKServer(locateHelpfileDirectories(), *serverPort)
 	go k.serveHTTP()
 	k.runFzf()
 }

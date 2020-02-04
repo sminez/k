@@ -21,5 +21,5 @@ func main() {
 		go s.ServeHTTP()
 	}
 
-	s.RunFzf(*showPreview)
+	s.RunFzf(*showPreview, *copyToClipboard)
 }

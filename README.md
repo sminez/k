@@ -45,7 +45,6 @@ $     print("Regardless of language, code blocks are marked with a shell style $
 ```
 
 ### Todo
-* Copy selection to clipboard (no ANSI colors)
 * Copy only code selection to clipboard
 * Pre-filter on certain tags?
 * Show all tags

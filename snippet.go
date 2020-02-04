@@ -35,9 +35,29 @@ func newSnippet(fname string, lines []string) *snippet {
 	return &s
 }
 
-// Stringify for ANSI escaped pretty printing
-// TODO: This feels kinda dirty as an impl for String()...
+// String...
 func (s *snippet) String() string {
+	var builder strings.Builder
+
+	for i, line := range s.lines {
+		if len(line) > 0 {
+			if line[0] == codeMarker {
+				builder.WriteString(fmt.Sprintf("%s\n", line))
+			} else {
+				builder.WriteString(line[2:])
+			}
+		} else {
+			if i != 0 {
+				builder.WriteString("\n")
+			}
+		}
+		builder.WriteString("\n")
+	}
+	return builder.String()
+}
+
+// Stringify for ANSI escaped pretty printing
+func (s *snippet) ansiString() string {
 	ansiString := func(colorCode int, line string) string {
 		return fmt.Sprintf("\033[1;%dm%s\033[0m\n", colorCode, line)
 	}

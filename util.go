@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 )
@@ -59,4 +60,27 @@ func locateHelpfileDirectories() []string {
 	}
 
 	return append(ds, p)
+}
+
+func copyStringToSystemClipboard(s string) error {
+	cmd := exec.Command(clipboardProg)
+
+	in, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	if err = cmd.Start(); err != nil {
+		return err
+	}
+
+	if _, err = in.Write([]byte(s)); err != nil {
+		return err
+	}
+
+	if err = in.Close(); err != nil {
+		return err
+	}
+
+	return cmd.Wait()
 }

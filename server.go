@@ -85,21 +85,22 @@ func (k *Server) ansiEscapedFromStub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "%s\n", k.snippetMap[string(s)])
+	fmt.Fprintf(w, "%s\n", k.snippetMap[string(s)].ansiString())
 }
 
 // RunFzf kicks off fzf as a subprocess and then waits for the selection to
 // come back before rendering it out
-func (k *Server) RunFzf(showPreview bool) {
-	var p string
+func (k *Server) RunFzf(showPreview, copyToClipboard bool) {
+	var p, s string
 
 	if showPreview {
-		p = fmt.Sprintf("--preview %s %s",
+		p = fmt.Sprintf(
+			"--preview %s %s",
 			fmt.Sprintf(previewCmd, k.port),
 			previewPosition,
 		)
 	}
-	s := fmt.Sprintf(
+	s = fmt.Sprintf(
 		"echo '%s' | fzf %s",
 		strings.Join(k.stubs, "\n"),
 		p,
@@ -113,5 +114,13 @@ func (k *Server) RunFzf(showPreview bool) {
 		log.Fatal(err)
 	}
 
-	fmt.Println(k.snippetMap[strings.TrimRight(string(t), "\n")])
+	snippet := k.snippetMap[strings.TrimRight(string(t), "\n")]
+
+	if copyToClipboard {
+		if err = copyStringToSystemClipboard(snippet.String()); err != nil {
+			panic(err)
+		}
+	} else {
+		fmt.Printf("%s\n", snippet.ansiString())
+	}
 }

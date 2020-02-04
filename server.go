@@ -79,13 +79,15 @@ func (k *Server) ServeHTTP() {
 
 // pretty print the selected snippet based on the stub received
 func (k *Server) ansiEscapedFromStub(w http.ResponseWriter, r *http.Request) {
-	s, err := ioutil.ReadAll(r.Body)
+	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Unable to read data from POST body: %s\n", err)
 		return
 	}
-
-	fmt.Fprintf(w, "%s\n", k.snippetMap[string(s)].ansiString())
+	s := k.snippetMap[string(b)]
+	if s != nil {
+		fmt.Fprintf(w, "%s\n", s.ansiString())
+	}
 }
 
 // RunFzf kicks off fzf as a subprocess and then waits for the selection to

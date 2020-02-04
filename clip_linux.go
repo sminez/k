@@ -2,4 +2,7 @@
 
 package k
 
-const clipboardProg = "xclip"
+var (
+	clipboardProg     = "xclip"
+	clipboardProgArgs = []string{"-in", "-selection", "clipboard"}
+)

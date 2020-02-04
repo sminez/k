@@ -63,7 +63,7 @@ func locateHelpfileDirectories() []string {
 }
 
 func copyStringToSystemClipboard(s string) error {
-	cmd := exec.Command(clipboardProg)
+	cmd := exec.Command(clipboardProg, clipboardProgArgs...)
 
 	in, err := cmd.StdinPipe()
 	if err != nil {

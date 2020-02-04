@@ -2,4 +2,7 @@
 
 package k
 
-const clipboardProg = "pbcopy"
+var (
+	clipboardProg     = "pbcopy"
+	clipboardProgArgs = []string{}
+)

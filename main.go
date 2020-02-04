@@ -257,16 +257,25 @@ func (k *kServer) runFzf() {
 // Determine where the user's helpfiles are located.
 // $HELPFILE_PATH has the same semantics as $PATH
 func locateHelpfileDirectories() []string {
+	var ds []string
+
 	s, ok := os.LookupEnv(helpfilePath)
 	if ok {
-		return strings.Split(s, ":")
+		ds = strings.Split(s, ":")
 	}
 
+	// Add ~/.helpfiles if it exists
 	h, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return []string{path.Join(h, defaultHelpfileDirectory)}
+	p := path.Join(h, defaultHelpfileDirectory)
+
+	if _, err := os.Stat(p); os.IsNotExist(err) {
+		return ds
+	}
+
+	return append(ds, p)
 }
 
 func main() {
@@ -275,5 +284,6 @@ func main() {
 	if *showPreview {
 		go k.serveHTTP()
 	}
+
 	k.runFzf()
 }

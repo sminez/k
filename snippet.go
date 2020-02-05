@@ -17,7 +17,7 @@ type snippet struct {
 // build a new snippet struct from a range of lines from a given helpfile
 func newSnippet(fname string, lines []string) *snippet {
 	s := snippet{
-		file:  strings.TrimRight(fname, ".txt"),
+		file:  strings.TrimSuffix(fname, ".txt"),
 		lines: lines,
 	}
 
@@ -25,9 +25,9 @@ func newSnippet(fname string, lines []string) *snippet {
 		if len(l) > 0 {
 			switch c := l[0]; c {
 			case titleMarker:
-				s.title = l[2:]
+				s.title = strings.TrimPrefix(l, fmt.Sprintf("%c ", titleMarker))
 			case tagMarker:
-				s.tags = l[2:]
+				s.tags = strings.TrimPrefix(l, fmt.Sprintf("%c ", tagMarker))
 			}
 		}
 	}
@@ -67,11 +67,14 @@ func (s *snippet) ansiString() string {
 		if len(line) > 0 {
 			switch firstChar := line[0]; firstChar {
 			case titleMarker:
-				builder.WriteString(ansiString(yellow, line[2:]))
+				l := strings.TrimPrefix(line, fmt.Sprintf("%c ", titleMarker))
+				builder.WriteString(ansiString(yellow, l))
 			case urlMarker:
-				builder.WriteString(ansiString(blue, line[2:]))
+				l := strings.TrimPrefix(line, fmt.Sprintf("%c ", urlMarker))
+				builder.WriteString(ansiString(blue, l))
 			case commentMarker:
-				builder.WriteString(ansiString(grey, line[2:]))
+				l := strings.TrimPrefix(line, fmt.Sprintf("%c ", commentMarker))
+				builder.WriteString(ansiString(grey, l))
 			case codeMarker:
 				builder.WriteString(fmt.Sprintf("%s\n", line))
 			}

@@ -42,6 +42,7 @@ they provide.
 
 $ def code_block(example):
 $     print("Regardless of language, code blocks are marked with a shell style $")
+--
 ```
 
 ### Todo

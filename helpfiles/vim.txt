@@ -74,3 +74,29 @@ $ au BufRead *.md setlocal spell
 $ au BufRead *.markdown setlocal spell
 $ au BufRead *.txt setlocal spell
 --
+
+# Add an abbreviation for common errors/boilerplate that you type all the time
+? binding,shortcut,snippet
+% https://vim.fandom.com/wiki/Using_abbreviations
+
+> There are two main ways of defining an abbreviation in your vimrc:
+>  ab <key sequence> <replacement>  // This will fire any time you type the sequence
+>  ia <key sequence> <replacement>  // This will only fire when you are in insert mode
+>
+> NOTE: You will need to hit <space> after typing your abbreviation to trigger the insert.
+
+$ // example: add a TODO checkbox
+$ ia ;' - [ ]
+--
+
+# Add a new snippet to a 'k' helpfile
+? k,binding,abbreviation
+% https://github.com/sminez/k
+
+> Add the following to your vimrc to create a new abbreviation that will stub
+> out a new snippet entry and place your cursor at the title line. Typing `][s`
+> and then hitting space will insert the snippet. Using `ia` instead of `ab` to
+> define the abbreviation means that it will only work when in insert mode.
+
+$ ia ][s # <CR>? <CR>%<CR><CR>> <CR><CR>$ <CR>--<ESC>?#<CR>a
+--

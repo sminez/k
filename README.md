@@ -25,6 +25,21 @@ somewhere online. If there is a user named 'sminez' there's a decent chance that
 it's me.
 
 
+### How to get started
+You will also need to install the `fzf` program (available via your package
+manager of choice) in order for `k` to run.
+
+By default, k will look in `~/.helpfiles` for help snippets to display so you
+can either clone this repo to that location or add the clone destination to the
+`$HELPFILE_PATH` environment variable (same semantics as `$PATH` - `:` delimited
+absolute paths) and k will scan all directories it finds on that path.
+
+Simply run `k` and then fuzzy match through your snippets to select one. By
+default the selected snippet will pretty print to the terminal with ANSI colors
+but you can instead send the output to you system clipboard with the `-clip`
+flag if desired. In this case, the ANSI color escape codes will be dropped.
+
+
 ### Snippet syntax
 Snippet files are simple plain-text files that follow a simple convention for
 deliminating individual snippets and marking lines with what type of content

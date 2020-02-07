@@ -64,8 +64,6 @@ $     print("Regardless of language, code blocks are marked with a shell style $
 * Copy only code selection to clipboard
 * Pre-filter on certain tags?
 * Show all tags
-* Pretty print code snippets with bat?
-  * Could also allow marking the language at the head of the snippet?
 * Also allow for pulling snippets over the network?...
 
 

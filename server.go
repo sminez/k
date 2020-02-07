@@ -1,10 +1,11 @@
 package k
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
+	"net"
 	"os"
 	"os/exec"
 	"strings"
@@ -70,23 +71,25 @@ func NewServer(port int) *Server {
 	}
 }
 
-// ServeHTTP starts a local http server for fzf to call back to in order to
+// ServeTCP starts a local tcp server for fzf to call back to in order to
 // render its preview window. [NOTE: Runs in it's own goroutine]
-func (k *Server) ServeHTTP() {
-	http.HandleFunc("/", k.ansiEscapedFromStub)
-	http.ListenAndServe(fmt.Sprintf("localhost:%d", k.port), nil)
+func (k *Server) ServeTCP() {
+	s, _ := net.Listen("tcp", fmt.Sprintf(":%d", k.port))
+	for {
+		// silently dropping failed incoming connections
+		conn, _ := s.Accept()
+		go k.ansiEscapedFromStub(conn)
+	}
 }
 
 // pretty print the selected snippet based on the stub received
-func (k *Server) ansiEscapedFromStub(w http.ResponseWriter, r *http.Request) {
-	b, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "Unable to read data from POST body: %s\n", err)
-		return
-	}
-	s := k.snippetMap[string(b)]
+func (k *Server) ansiEscapedFromStub(conn net.Conn) {
+	b, _ := bufio.NewReader(conn).ReadString('\n')
+	defer conn.Close()
+
+	s := k.snippetMap[b]
 	if s != nil {
-		fmt.Fprintf(w, "%s\n", s.ansiString())
+		conn.Write([]byte(s.ansiString()))
 	}
 }
 

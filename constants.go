@@ -2,7 +2,7 @@ package k
 
 const (
 	// DefaultPort is the default port to server the HTTP handler for fzf previews
-	DefaultPort              = 1992
+	DefaultPort              = 4242
 	helpfilePath             = "HELPFILE_PATH"
 	defaultHelpfileDirectory = ".helpfiles"
 
@@ -15,7 +15,7 @@ const (
 	tagMarker          = '?'
 
 	// UI and interaction with fzf
-	previewCmd      = "\"curl -s -X POST -d \"{}\" 127.0.0.1:%d/\""
+	previewCmd      = "\"echo \"{}\" | nc localhost %d\""
 	previewPosition = "--preview-window=up:70%"
 	seperator       = " | " // Delimits sections in the lines passed to fzf
 	yellow          = 33    // ANSI terminal escape sequence

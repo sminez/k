@@ -39,6 +39,18 @@ default the selected snippet will pretty print to the terminal with ANSI colors
 but you can instead send the output to you system clipboard with the `-clip`
 flag if desired. In this case, the ANSI color escape codes will be dropped.
 
+### Building locally
+Provided you have `go` installed, all you should need to do is run
+```bash
+$ go install ./...
+```
+and you will have the `k` binary added to your `$GOROOT/bin`. For local testing
+and running without install you can use the following (though there will be a
+startup cost as the binary is compiled on the fly):
+```bash
+$ go run k/main.go
+```
+
 
 ### Snippet syntax
 Snippet files are simple plain-text files that follow a simple convention for

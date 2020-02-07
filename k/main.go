@@ -18,7 +18,7 @@ func main() {
 	s := k.NewServer(*serverPort)
 
 	if *showPreview {
-		go s.ServeHTTP()
+		go s.Listen()
 	}
 
 	s.RunFzf(*showPreview, *copyToClipboard)

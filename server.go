@@ -14,17 +14,19 @@ import (
 // A Server handles preview requests from the spawned fzf process. It also holds
 // all of the state we build up from parsing the helpfiles we find on init.
 type Server struct {
-	snippetMap map[string]*snippet
-	stubs      []string
-	port       int
+	tcpListener net.Listener
+	snippetMap  map[string]*snippet
+	stubs       []string
+	port        int
 }
 
 // NewServer parallel reads all helpfiles that it finds before parsing into
-// stubs for fzf.
-// NOTE: The http server itself is created when calling ServeHTTP.
+// stubs for fzf. Provided there were no errors in parsing the directories
+// we found, it will also bind a TCP listener to <port> ready to accept
+// incoming connections.
 func NewServer(port int) *Server {
 	var fl, tl, k int
-	var ss []*snippet
+	var ss, fs []*snippet
 	var ts []string
 
 	m := make(map[string]*snippet)
@@ -37,7 +39,6 @@ func NewServer(port int) *Server {
 			log.Fatal(err)
 		}
 
-		// NOTE: goro for each file
 		for _, fh := range fs {
 			f := fh.Name()
 			if len(f) > fl {
@@ -49,13 +50,14 @@ func NewServer(port int) *Server {
 	}
 
 	for i := 0; i < k; i++ {
-		ss = append(ss, <-ch...)
-	}
+		fs = <-ch
 
-	for _, s := range ss {
-		if len(s.tags) > tl {
-			tl = len(s.tags)
+		for _, s := range fs {
+			if len(s.tags) > tl {
+				tl = len(s.tags)
+			}
 		}
+		ss = append(ss, fs...)
 	}
 
 	for _, s := range ss {
@@ -64,33 +66,43 @@ func NewServer(port int) *Server {
 		m[t] = s
 	}
 
+	l, _ := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+
 	return &Server{
-		snippetMap: m,
-		stubs:      ts,
-		port:       port,
+		tcpListener: l,
+		snippetMap:  m,
+		stubs:       ts,
+		port:        port,
 	}
 }
 
-// ServeTCP starts a local tcp server for fzf to call back to in order to
+// BindAndListen starts a local tcp server for fzf to call back to in order to
 // render its preview window. [NOTE: Runs in it's own goroutine]
-func (k *Server) ServeTCP() {
-	s, _ := net.Listen("tcp", fmt.Sprintf(":%d", k.port))
+func (k *Server) Listen() {
 	for {
 		// silently dropping failed incoming connections
-		conn, _ := s.Accept()
+		conn, _ := k.tcpListener.Accept()
 		go k.ansiEscapedFromStub(conn)
 	}
 }
 
 // pretty print the selected snippet based on the stub received
 func (k *Server) ansiEscapedFromStub(conn net.Conn) {
-	b, _ := bufio.NewReader(conn).ReadString('\n')
+	var resp string
+
+	r, _ := bufio.NewReader(conn).ReadString('\n')
 	defer conn.Close()
 
-	s := k.snippetMap[b]
-	if s != nil {
-		conn.Write([]byte(s.ansiString()))
+	r = strings.TrimRight(r, "\n")
+	s, ok := k.snippetMap[r]
+
+	if ok {
+		resp = s.ansiString()
+	} else {
+		resp = fmt.Sprintf("-- ERROR --\n\nunable to find snippet for '%s'", r)
 	}
+
+	conn.Write([]byte(resp))
 }
 
 // RunFzf kicks off fzf as a subprocess and then waits for the selection to

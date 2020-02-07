@@ -72,11 +72,44 @@ $     print("Regardless of language, code blocks are marked with a shell style $
 --
 ```
 
+### Bugs
+* When `fzf` decides you don't have a prefect match and instead trucates the
+  input to be some strange mashed up version of the original string, we
+  completely lose the ability to parse the resulting stub...
+  * We _might_ be able to do some sort of 'string contains' or regex match on
+  what ends up being passed through but this one seems pretty odd. Not sure what
+  the intended scripting path around this from `fzf` is supposed to be as this
+  will affect preview command, not just `k`.
+* Snippet titles with single quote (') characters are broken by default.
+  * The contents of the in memory snippet map expect this single quote
+  characters to be present but they are not present in the output from fzf so we
+  are unable to parse the stub when it is sent back to us.
+  * The current solution is to simply change these to double-quotes (") instead
+  but this is not ideal and probably has its own edge cases...
+
 ### Todo
 * Copy only code selection to clipboard
 * Pre-filter on certain tags?
 * Show all tags
-* Also allow for pulling snippets over the network?...
+
+### Non-goals / rejected ideas
+* Allow for pulling snippets over the network
+  * I've tried a couple of things to get this to work and it isn't proving to be
+  easy to do in an efficient manner. For a git repo for example, you can just
+  clone the thing (and then optionally, auto fetch on run) but that adds a
+  pretty big start up cost to running `k` in the general case. You can also use
+  the unauthenticated Github API for listing directory contents and then pulling
+  the raw files straight into memory on the fly but that is also pretty slow,
+  even if you spin out a goro for each file being pulled over the network.
+  * An alternative would be to add some sort of flag for cloning a remote set of
+  helpfiles and then auto-updating all local repos to ensure we're up to date
+  and at that point we're just writing a full blown git client... So, in the
+  spirit of minimalism, suckless and "I don't have time for this", lets just
+  settle on "clone the damn repo!" as the accepted solution.
+* Managing snippets from `k` itself.
+  * Yes I could write a TUI / wizard for adding a new snippet to your local
+  helpfiles, but that's what a text editor is for. `k` just wraps `fzf` to make
+  it easier to search through your snippets.
 
 
 ### To write up

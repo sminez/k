@@ -62,6 +62,7 @@ func NewServer(port int) *Server {
 
 	for _, s := range ss {
 		t := s.fzfString(fl-4, tl) // We trim off the '.txt' suffix
+		t = strings.Replace(t, "'", "\"", -1)
 		ts = append(ts, t)
 		m[t] = s
 	}
@@ -76,7 +77,7 @@ func NewServer(port int) *Server {
 	}
 }
 
-// BindAndListen starts a local tcp server for fzf to call back to in order to
+// Listen starts a local tcp server for fzf to call back to in order to
 // render its preview window. [NOTE: Runs in it's own goroutine]
 func (k *Server) Listen() {
 	for {
@@ -108,7 +109,7 @@ func (k *Server) ansiEscapedFromStub(conn net.Conn) {
 // RunFzf kicks off fzf as a subprocess and then waits for the selection to
 // come back before rendering it out
 func (k *Server) RunFzf(showPreview, copyToClipboard bool) {
-	var p, s string
+	var p string
 
 	if showPreview {
 		p = fmt.Sprintf(
@@ -117,7 +118,8 @@ func (k *Server) RunFzf(showPreview, copyToClipboard bool) {
 			previewPosition,
 		)
 	}
-	s = fmt.Sprintf(
+
+	s := fmt.Sprintf(
 		"echo '%s' | fzf %s",
 		strings.Join(k.stubs, "\n"),
 		p,
@@ -131,7 +133,11 @@ func (k *Server) RunFzf(showPreview, copyToClipboard bool) {
 		log.Fatal(err)
 	}
 
-	snippet := k.snippetMap[strings.TrimRight(string(t), "\n")]
+	snippet, ok := k.snippetMap[strings.TrimRight(string(t), "\n")]
+	if !ok {
+		fmt.Println("unable to find that snippet")
+		return
+	}
 
 	if copyToClipboard {
 		if err = copyStringToSystemClipboard(snippet.String()); err != nil {

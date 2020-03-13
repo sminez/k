@@ -170,3 +170,39 @@ $   print -nP -- "$code: %F{$code}%K{$code}Test%k%f ";
 $   (( code % 8 && code < 255 )) || printf '\n'
 $ }
 --
+
+# Trim surrounding whitespace from a string
+? bash,zsh,string,remove,edit
+
+> In some simple cases you can pipe output through xargs to strip surrounding
+> whitespace but xargs will do more than that by default:
+$ echo ">>$(echo "   this won't mess up the quote!    " | xargs)<<"
+$ xargs: unmatched single quote; by default quotes are special to xargs unless you use the -0 option
+$ >>this<<
+
+> Not quite what we want. OK then, let's try adding the -0 flag then
+$ echo ">>$(echo "   this won't mess up the quote!    " | xargs -0)<<"
+$ >>   this won't mess up the quote!    <<
+
+> Actively useless...as an alternative, try this:
+$ alias trim="sed 's/^[[:space:]]*//; s/[[:space:]]*$//'"
+$ echo ">>$(echo "   this won't mess up the quote!    " | trim)<<"
+$ >>this won't mess up the quote!<<
+--
+
+# Toggle script behaviour based on the operating system
+? bash,zsh,OS,BSD,Linux
+
+> Unless you install them explicitly via homebrew, OSX comes with the BSD
+> variants of the standard UNIX command line utilities, not the GNU variants
+> with all of their glorious flag based insanity. If your script is relying on
+> a flag that is non-POSIX based then there is a decent chance it will fail on
+> OSX for some users. Alternatively, you might want to create a set of aliases
+> for some systems and not others. In this case, 'uname' is your friend:
+
+$ case $(uname -s) in
+$   Darwin) echo "running on OSX!";;
+$    Linux) echo "running on Linux!";;
+$        *) echo "who knows...";;
+$ esac
+--

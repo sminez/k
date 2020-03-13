@@ -4,12 +4,12 @@ k - Answers to questions you've already asked
 ### What is k?
 k is a tool for managing snippets, links, answers, names... you get the idea.
 It should make it relatively simple to quickly search through all of your
-snippets based on title, tag and namespacing through the filenames that you keep
+snippets based on title, tag and name-spacing through the filenames that you keep
 them in.
 
 It is essentially a wrapper that drives using fzf (so you'll need to have that
 installed) which is a little more user friendly than simply grepping text files
-on your filesystem. I'm a programmer so for me I want to be able to look at
+on your file system. I'm a programmer so for me I want to be able to look at
 text, code and links: so that's what k supports. I may end up adding some more
 complicated actions around this in the future but for now, it simply hunts down
 that bit of information that you are sure you knew at some point but can't quite
@@ -34,27 +34,14 @@ can either clone this repo to that location or add the clone destination to the
 `$HELPFILE_PATH` environment variable (same semantics as `$PATH` - `:` delimited
 absolute paths) and k will scan all directories it finds on that path.
 
-Simply run `k` and then fuzzy match through your snippets to select one. By
-default the selected snippet will pretty print to the terminal with ANSI colors
-but you can instead send the output to you system clipboard with the `-clip`
-flag if desired. In this case, the ANSI color escape codes will be dropped.
-
-### Building locally
-Provided you have `go` installed, all you should need to do is run
-```bash
-$ go install ./...
-```
-and you will have the `k` binary added to your `$GOROOT/bin`. For local testing
-and running without install you can use the following (though there will be a
-startup cost as the binary is compiled on the fly):
-```bash
-$ go run k/main.go
-```
+Simply run `k` and then start typing to fuzzy match through your snippets to
+select one. When you hit enter your chosen snippet will be printed to the
+terminal.
 
 
 ### Snippet syntax
 Snippet files are simple plain-text files that follow a simple convention for
-deliminating individual snippets and marking lines with what type of content
+delimiting individual snippets and marking lines with what type of content
 they provide.
 ```
 # This is a tile or description for a snippet. It's what you will see when searching
@@ -72,24 +59,9 @@ $     print("Regardless of language, code blocks are marked with a shell style $
 --
 ```
 
-### Bugs
-* When `fzf` decides you don't have a prefect match and instead trucates the
-  input to be some strange mashed up version of the original string, we
-  completely lose the ability to parse the resulting stub...
-  * We _might_ be able to do some sort of 'string contains' or regex match on
-  what ends up being passed through but this one seems pretty odd. Not sure what
-  the intended scripting path around this from `fzf` is supposed to be as this
-  will affect preview command, not just `k`.
-* Snippet titles with single quote (') characters are broken by default.
-  * The contents of the in memory snippet map expect this single quote
-  characters to be present but they are not present in the output from fzf so we
-  are unable to parse the stub when it is sent back to us.
-  * The current solution is to simply change these to double-quotes (") instead
-  but this is not ideal and probably has its own edge cases...
-
 ### Todo
-* Copy only code selection to clipboard
-* Pre-filter on certain tags?
+* Copy to clipboard
+* Pre-filter on certain tags
 * Show all tags
 
 ### Non-goals / rejected ideas

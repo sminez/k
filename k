@@ -26,12 +26,21 @@ C=(
 )
 missing_snippet="$C[red]$C[bold]-- ERROR --\n\nunable to find that snippet$C[nc]"
 default_helpfile_dir="$HOME/.helpfiles"
+heading="$C[yellow]$C[bold]"
+url="$C[blue]$C[bold]"
+desc="$C[bold]"
+
+case $(uname -s) in
+  Darwin) alias clipboard='pbcopy';;
+   Linux) alias clipboard='xclip -selection clipboard';;
+       *) alias clipboard='cat';;
+esac
+
 hpath=$HELPFILE_PATH
 if [ -d $default_helpfile_dir ]; then
   hdirs+=":$default_helpfile_dir"
 fi
 hdirs=(${(@s/:/)hpath})
-
 
 # == helpers ==
 function error_and_exit {
@@ -74,7 +83,8 @@ function generate_stubs {
 
 
 function ansi_snippet {
-  local d p title abs_path fname_target raw stub=$1
+  local stub=$1 _heading=$2 _url=$3 _desc=$4
+  local d p title abs_path fname_target raw
 
   fname_target="$(echo $stub | cut -d'|' -f1 | trim)"
   title="$(echo $stub | cut -d'|' -f2 | trim | sed 's./.\\/.')"
@@ -82,18 +92,16 @@ function ansi_snippet {
   for d in $hdirs; do
     for p in $d/*(.); do
       if [[ "${$(basename $p)%.*}" == $fname_target ]]; then
-        raw=$(sed -n "/# *$title/,/^--/p" $p)
-        [ -n "$raw" ] && echo $raw | awk \
-          -v heading="$C[yellow]$C[bold]" \
-          -v url="$C[blue]$C[bold]" \
-          -v desc="$C[bold]" \
-          -v nc="$C[nc]" '
-          /^#/  { printf heading; for (i=2; i<=NF; i++) printf $i " "; print nc }
-          /^%/  { printf url; for (i=2; i<=NF; i++) printf $i " "; print nc }
-          /^>/  { printf desc; for (i=2; i<=NF; i++) printf $i " "; print nc }
-          /^\$/ { print }
-          /^$/  { print "" }
-        '
+        raw=$(sed -n "/#[[:space:]]*$title/,/^--/p" $p)
+        [ -z "$raw" ] && return
+        echo $raw |
+          awk -v heading="$_heading" -v url="$_url" -v desc="$_desc" -v nc="$C[nc]" '
+            /^#/  { printf heading; for (i=2; i<=NF; i++) printf $i " "; print nc }
+            /^%/  { printf url; for (i=2; i<=NF; i++) printf $i " "; print nc }
+            /^>/  { printf desc; for (i=2; i<=NF; i++) printf $i " "; print nc }
+            /^\$/ { print }
+            /^$/  { print "" }
+          '
         return
       fi
     done
@@ -104,15 +112,23 @@ function ansi_snippet {
 # == main ==
 require_external fzf column
 
-if [[ "$1" == "___preview" ]]; then
-  ansi_snippet $2
-else
-  selection=$(
-    generate_stubs |
-    fzf \
-      --preview-window=up:70% \
-      --preview "$0 ___preview {}"
-  )
 
-  [ -n "$selection" ] && ansi_snippet $selection
+if [[ "$1" == "___preview" ]]; then
+  ansi_snippet $2 $heading $url $desc
+  exit 0
 fi
+
+selection=$(
+  generate_stubs |
+  fzf \
+    --preview-window=up:70% \
+    --preview "$0 ___preview {}"
+)
+
+[ -z "$selection" ] && exit 0
+
+case $1 in
+  --no-color|-n) ansi_snippet $selection;;
+      --clip|-c) ansi_snippet $selection | clipboard;;
+              *) ansi_snippet $selection $heading $url $desc;;
+esac

@@ -1,6 +1,8 @@
 k - Answers to questions you've already asked
 =============================================
 
+![demo](https://github.com/sminez/k/blob/master/k-1.gif)
+
 ### What is k?
 k is a tool for managing snippets, links, answers, names... you get the idea.
 It should make it relatively simple to quickly search through all of your

@@ -38,7 +38,8 @@ absolute paths) and k will scan all directories it finds on that path.
 
 Simply run `k` and then start typing to fuzzy match through your snippets to
 select one. When you hit enter your chosen snippet will be printed to the
-terminal.
+terminal. You can add the `--clip` flag to instead copy the selected entry to
+your system clipboard. (Try running `k --help` to see all options)
 
 
 ### Snippet syntax
@@ -62,29 +63,8 @@ $     print("Regardless of language, code blocks are marked with a shell style $
 ```
 
 ### Todo
-* Copy to clipboard
 * Pre-filter on certain tags
 * Show all tags
-
-### Non-goals / rejected ideas
-* Allow for pulling snippets over the network
-  * I've tried a couple of things to get this to work and it isn't proving to be
-  easy to do in an efficient manner. For a git repo for example, you can just
-  clone the thing (and then optionally, auto fetch on run) but that adds a
-  pretty big start up cost to running `k` in the general case. You can also use
-  the unauthenticated Github API for listing directory contents and then pulling
-  the raw files straight into memory on the fly but that is also pretty slow,
-  even if you spin out a goro for each file being pulled over the network.
-  * An alternative would be to add some sort of flag for cloning a remote set of
-  helpfiles and then auto-updating all local repos to ensure we're up to date
-  and at that point we're just writing a full blown git client... So, in the
-  spirit of minimalism, suckless and "I don't have time for this", lets just
-  settle on "clone the damn repo!" as the accepted solution.
-* Managing snippets from `k` itself.
-  * Yes I could write a TUI / wizard for adding a new snippet to your local
-  helpfiles, but that's what a text editor is for. `k` just wraps `fzf` to make
-  it easier to search through your snippets.
-
 
 ### To write up
 * https://ablagoev.github.io/linux/adventures/commands/2017/02/19/adventures-in-usr-bin.html

@@ -33,7 +33,7 @@ desc="$C[bold]"
 case $(uname -s) in
   Darwin) alias clipboard='pbcopy';;
    Linux) alias clipboard='xclip -selection clipboard';;
-       *) alias clipboard='cat';;
+       *) alias clipboard='cat && echo -e "\n\nunknown OS: no clipboard suppor"';;
 esac
 
 hpath=$HELPFILE_PATH
@@ -43,6 +43,18 @@ fi
 hdirs=(${(@s/:/)hpath})
 
 # == helpers ==
+function usage {
+  cat <<EOF
+usage: k <flags>
+
+flags:
+  --no-color|-n     don't use ANSI color codes when printing the selected entry
+  --clip|-c         copy the selected entry to the system clipboard instead of
+                    printing it to the terminal (implies --no-color)
+  --help|-h         display this help message
+EOF
+}
+
 function error_and_exit {
   cecho red "$C[red]$C[bold]error:$C[nc] $*" 2>&1
   exit 1
@@ -93,8 +105,8 @@ function ansi_snippet {
     for p in $d/*(.); do
       if [[ "${$(basename $p)%.*}" == $fname_target ]]; then
         raw=$(sed -n "/#[[:space:]]*$title/,/^--/p" $p)
-        [ -z "$raw" ] && return
-        echo $raw |
+        if [ -n "$raw" ]; then
+          echo $raw |
           awk -v heading="$_heading" -v url="$_url" -v desc="$_desc" -v nc="$C[nc]" '
             /^#/  { printf heading; for (i=2; i<=NF; i++) printf $i " "; print nc }
             /^%/  { printf url; for (i=2; i<=NF; i++) printf $i " "; print nc }
@@ -102,7 +114,8 @@ function ansi_snippet {
             /^\$/ { print }
             /^$/  { print "" }
           '
-        return
+          return
+        fi
       fi
     done
   done

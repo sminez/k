@@ -206,3 +206,21 @@ $    Linux) echo "running on Linux!";;
 $        *) echo "who knows...";;
 $ esac
 --
+
+# Create a parameterised JSON payload on the command line
+? json,jq,vars,curl
+% https://stedolan.github.io/jq/manual/
+
+> Correctly encoding and escaping JSON on the command line when combined with
+> shell string interpolation quickly becomes a pain when trying to do it by
+> hand. Instead, use jq to quickly build a payload using multiple shell
+> variables:
+
+$ title="This is a test"
+$ body="this is a lot easier that messing around with tr or backslashes"
+$ jq -n --arg title $title --arg body $body '{ "title": $title, "body": $body }'
+$ {
+$   "title": "This is a test",
+$   "body": "this is a lot easier that messing around with tr or backslashes"
+$ }
+--

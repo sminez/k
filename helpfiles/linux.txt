@@ -1,0 +1,38 @@
+# Bluetooth devices fail to connect
+? arch,blutooth,wireless,connect
+
+> Check to make sure that your bluetooth controller is not currently disabled
+> using rfkill
+$ rfkill list
+$ 0: hci0: Bluetooth
+$         Soft blocked: yes
+$         Hard blocked: no
+$ 1: phy0: Wireless LAN
+$         Soft blocked: no
+$         Hard blocked: no
+
+> If you get output like that listed above, then you need to unblock your bluetooth
+> controller:
+$ sudo rfkill unblock all
+--
+
+# Remap the capslock key to something more useful
+? keyboard,remap,device,setxkbmap
+% man setxkbmap
+
+> setxkbmap is incredibly powerful for remapping keys, you can remap anything you want
+> to anything else (and completely screw yourself in the process...) it is worth looking
+> at some of the built in 'option' settings which allow for common use cases:
+
+$ setxkbmap -option caps:super
+$ setxkbmap -option caps:hyper
+$ setxkbmap -option caps:ctrl_modifier
+$ setxkbmap -option                     # clear all custom option settings
+--
+
+# Swap the alt and super keys
+? keyboard,remap,device,setxkbmap
+% man setxkbmap
+
+$ setxkbmap -option altwin:swap_alt_win # swap the alt and window keys
+--

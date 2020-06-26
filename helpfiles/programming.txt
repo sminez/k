@@ -1,0 +1,16 @@
+# Mock only some functions from a js/ts file when using jest
+? javascript,typescript,testing
+% https://jestjs.io/docs/en/jest-object#jestrequireactualmodulename
+
+> This allows you to selectively mock some functions and keep the real
+> implementation of others from a single module.
+
+$ import { bar, baz } from "foo";
+$
+$ jest.mock("foo", () => {
+$   return {
+$     ...require.requireActual("foo"),
+$     bar: jest.fn()
+$   };
+$ });
+--

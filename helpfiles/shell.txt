@@ -224,3 +224,15 @@ $   "title": "This is a test",
 $   "body": "this is a lot easier that messing around with tr or backslashes"
 $ }
 --
+
+# Extract all image links from a webpage and optionally download
+? web,scraping,wget,curl
+
+> Scrape all image links (jpg, jpeg, png, gif) from a website and remove duplicates
+> This will also remove any query strings that have been appended after the file
+> extension. If you like you can pipe this directly into wget via xargs but it's
+> better to dump to a file, review and then cat that into wget.
+
+$ curl -s "$URL" | grep -o -P 'https?://.*?\.(jpg|jpeg|png|gif)' | sort -u > links.txt
+$ cat links.txt | xargs wget
+--

@@ -4,10 +4,8 @@
 
 > knr-c-fmt.sh
 $ # use astyle to format a C sourcefile in KnR style
-$ tmp=$(mktemp)
-$ astyle --style=kr --indent=tab < "$1" > "$tmp"
-$ mv "$tmp" "$1"
-$ rm "$tmp"
+$ astyle --style=kr --indent=tab < "$1" > out.c
+$ mv out.c "$1"
 --
 
 # Stop and remove ALL docker images on your host

@@ -236,3 +236,15 @@ $ }
 $ curl -s "$URL" | grep -o -P 'https?://.*?\.(jpg|jpeg|png|gif)' | sort -u > links.txt
 $ cat links.txt | xargs wget
 --
+
+# Mass rename files from one extension to another
+? zsh,plugin,mv
+% http://zsh.sourceforge.net/Doc/Release/User-Contributions.html#index-zmv
+
+> zmv is a plugin that comes with zsh but needs enabling. Adding the following
+> to your zshrc will do the trick:
+$ autoload zmv
+
+> After that, you can do things like the following, and more (note the capture group):
+$ zmv '(*).txt' '$1.csv'
+--

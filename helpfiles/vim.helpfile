@@ -105,11 +105,29 @@ $ ia ][s # <CR>? <CR>%<CR><CR>> <CR><CR>$ <CR>--<ESC>?#<CR>a
 ? eye-candy,ui,syntax
 % https://vim.fandom.com/wiki/Creating_your_own_syntax_files
 
-> The example outlined in this site is a good starting point if you want to create
-> your own syntax file. You will need to ensure that you also associate the filetype
-> with your new syntax file: there is a "correct" way to do this and then there is
-> a "just make it work" way of doing it. The latter involves simply adding the following
-> to your vimrc:
+> The example outlined in this site is a good starting point if you want to
+> create your own syntax file. You will need to ensure that you also associate
+> the filetype with your new syntax file: there is a "correct" way to do this
+> and then there is a "just make it work" way of doing it. The latter involves
+> simply adding the following to your vimrc:
 
-$ au BufRead,BufNewFile   *.<ext> set filetype=<filetype name that you set in the syntax file>
+$ au BufRead,BufNewFile   *.<ext> set filetype=<name in the syntax file>
+
+> You can also run the following in vim to see how which syntax groups there
+> are and how they are displayed in your current theme:
+--
+
+# Toggle case of the current selection / at cursor
+? keybinding,built-in
+% http://vimcommands.github.io/
+
+> Simply hitting '~' while in Normal or Visual mode will toggle the case of
+> all characters highlighted.
+--
+
+# Increment / decrement a number in a file
+? built-in,keybinding
+% http://vimcommands.github.io/
+
+> C-a and C-x increment/decrement the number under cursor respectively
 --

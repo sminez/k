@@ -14,3 +14,12 @@ $     bar: jest.fn()
 $   };
 $ });
 --
+
+# Online, easy to search manpages
+? docs,reference
+% https://www.mankier.com/
+
+> This site is a glorious conversion of the original Troff source to HTML
+> that is then hosted with a surprisingly good search feature. A number of
+> libraries (XCB for example) are also present.
+--

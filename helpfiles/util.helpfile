@@ -42,3 +42,44 @@ $
 $ data = json.loads(''.join(line for line in sys.stdin))
 $ print(json.dumps(extract(data), sort_keys=True, indent=4))
 --
+
+
+# Fix a bricked tada68 mechanical keyboard by re-flashing the firmware
+? keyboard,dead,brick,pi
+% https://www.reddit.com/r/MechanicalKeyboards/comments/fu7rc0/how_to_unbrick_tada68_with_raspberry_pi/
+% https://www.raspberrypi.org/documentation/usage/gpio/
+
+> I've hit this one multiple times now and keep losing the details so I'm putting it here so I can find
+> it again later. This is all based on starting with a raspberry pi and some GPIO leads to connect to the
+> keyboard.
+
+$ sudo apt-get update && sudo apt-get upgrade
+$ sudo apt-get install avrdude
+$ mkdir tada68 && cd tada68
+$ cp /etc/avrdude.conf avrdude_gpio.conf
+$ wget https://github.com/rwilbur/tada68-bootloader-restore/raw/master/mass_bootloader_tada68.hex
+
+> Next append the following to the end of the config:
+>
+> # Linux GPIO configuration for avrdude.
+> # Change the lines below to the GPIO pins connected to the AVR.
+> programmer
+>   id    = "pi_1";
+>   desc  = "Use the Linux sysfs interface to bitbang GPIO lines";
+>   type  = "linuxgpio";
+>   reset = 8;
+>   sck   = 11;
+>   mosi  = 10;
+>   miso  = 9;
+> ;
+
+> Finally, wire up the tada to the pi using the pin diagram in the reddit post and run the following to
+> flash the firmware. It'll take a while and then once avrdude exits you can unwire the tada, put it back in
+> its case and plug it back in. (Check that keys are functioning before screwing it back into the case!)
+
+$ $ sudo avrdude -v \
+$       -p atmega32u4 \
+$       -C /home/pi/tada68/avrdude_gpio.conf \
+$       -c pi_1 \
+$       -U flash:w:/home/pi/tada68/mass_bootloader_tada68.hex
+--

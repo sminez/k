@@ -36,3 +36,29 @@ $ setxkbmap -option                     # clear all custom option settings
 
 $ setxkbmap -option altwin:swap_alt_win # swap the alt and window keys
 --
+
+# Connect to a wifi network during an arch linux install
+? arch,setup,config,network,wifi
+% https://wiki.archlinux.org/index.php/Network_configuration/Wireless
+% https://bbs.archlinux.org/viewtopic.php?id=222181
+
+> This is one that bites me every time because I forget it. For WPA based networks, the
+> following seems to work pretty consistently for me:
+
+$ ifconfig                    # to get the interface name, typically wlan0
+$ ip link set <interface> up
+$ dmesg | grep iwlwifi        # check that the firmware loaded correctly
+
+> To actually connect, you need to set up wpa_supplicant:
+$ wpa_passphrase "<ssid>" "<password>" > wpa.conf
+$ vi wpa.conf
+
+> Add the following to the top of the file above the network block:
+$ ctrl_interface=/run/wpa_supplicant
+$ ctrl_interface_group=wheel
+$ update_config=1
+$ ap_scan=1
+
+> Then run the following (assuming wlan0 is your network interface):
+$ wpa_supplicant -B -i wlan0 -c wpa.conf
+--

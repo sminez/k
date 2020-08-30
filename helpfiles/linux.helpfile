@@ -62,3 +62,34 @@ $ ap_scan=1
 > Then run the following (assuming wlan0 is your network interface):
 $ wpa_supplicant -B -i wlan0 -c wpa.conf
 --
+
+# Suckless project git repos
+? suckless,tooling,repos,code,utilities
+% http://git.suckless.org/
+
+> Simply a bookmark to the fatastic suckless.org self hosted git repos
+--
+
+# List attached PCI devices along with their required kernel modules
+? linux,kernel,commandline,util
+% https://wiki.archlinux.org/index.php/Kernel_module
+
+$ lspci -k
+--
+
+# Use pacman to find which package contains a given program
+? arch,pacman,package,install
+% https://wiki.archlinux.org/index.php/Pacman
+
+$ pacman -F <program-name>
+$ # see 'man pacman' as always for more info
+--
+
+# Cheat sheet for comparing different package manager commands
+? pacman,apt,dnf,package,manager,install
+% https://wiki.archlinux.org/index.php/Pacman/Rosetta
+
+> Mainly here as a quick overview of various pacman commands but this is also useful
+> as a translation between different package manager semantics and a reminder of what
+> can be done without needing to fire up a browser.
+--

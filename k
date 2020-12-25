@@ -153,7 +153,7 @@ selection=$(
 
 case $1 in
   --no-color|-n) ansi_snippet $selection;;
-      --open|-o) open "$(ansi_snippet $selection | grep 'http' | head -n1)";;
+      --open|-o) open "$(ansi_snippet $selection | grep 'http' | head -n1)" &;;
       --clip|-c) ansi_snippet $selection | clipboard;;
               *) ansi_snippet $selection $heading $url $desc $nc;;
 esac

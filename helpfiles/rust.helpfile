@@ -1,0 +1,84 @@
+# Rustdoc details 
+? docs,documentation
+% https://doc.rust-lang.org/rustdoc
+
+> The official book on how to use rustdoc
+--
+
+# The Rust Book 
+? docs,documentation,guide 
+% https://doc.rust-lang.org/book/
+
+> Current version of the rust book
+--
+
+# Rust by Example 
+? docs,examples
+% https://doc.rust-lang.org/stable/rust-by-example/
+
+> Examples for most common rust idoms
+--
+
+# Rust stdlib docs 
+? docs,api,documentation
+% https://doc.rust-lang.org/std/index.html
+
+> StdLib docs for stable Rust
+--
+
+# Rust Editions guide 
+? docs,guide,documentation
+% https://doc.rust-lang.org/edition-guide/index.html
+
+> Guide on the different rust 'editions' and what changes
+--
+
+# The Cargo book 
+? docs,documentation
+% https://doc.rust-lang.org/cargo/index.html
+
+> Official docs on how to use Cargo
+--
+
+# The rustc book 
+? docs,documentation
+% https://doc.rust-lang.org/rustc/index.html
+
+> Guide on the rust compiler itself
+--
+
+# Rust compiler errors
+? docs,reference,documentation
+% https://doc.rust-lang.org/error-index.html
+
+> Rich explanations for each of the rustc compiler errors
+--
+
+# Rust reference guide 
+? docs,guide,documentation
+% https://doc.rust-lang.org/stable/reference/
+
+> Detailed reference guide for all of rust
+--
+
+# The little book of rust macros 
+? docs,guide,documentation
+% https://danielkeep.github.io/tlborm/book/index.html
+
+> Unofficial book of rust macro techniques
+--
+
+# The Rustonomicon 
+? docs,reference,unsafe
+% https://doc.rust-lang.org/nomicon/
+
+> The offical guide on unsafe rust
+--
+
+# The unstable book 
+? docs,guide,rederence
+% https://doc.rust-lang.org/nightly/unstable-book/index.html
+
+> Documentation on the current unstable nightly features and how to
+> use them.
+--

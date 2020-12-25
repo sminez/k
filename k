@@ -29,11 +29,20 @@ default_helpfile_dir="$HOME/.helpfiles"
 heading="$C[yellow]$C[bold]"
 url="$C[blue]$C[bold]"
 desc="$C[bold]"
+nc="$C[nc]"
 
 case $(uname -s) in
-  Darwin) alias clipboard='pbcopy';;
-   Linux) alias clipboard='xclip -selection clipboard';;
-       *) alias clipboard='cat && echo -e "\n\nunknown OS: no clipboard suppor"';;
+  Darwin) 
+    alias clipboard='pbcopy';
+  ;;
+  Linux)
+    alias clipboard='xclip -selection clipboard';
+    alias open='xdg-open';
+  ;;
+  *)
+    alias clipboard='cat && echo -e "\n\nunknown OS: no clipboard support"';
+    alias open='cat && echo -e "\n\nunknown OS: no open in browser support"';
+  ;;
 esac
 
 hpath=$HELPFILE_PATH
@@ -49,6 +58,8 @@ usage: k <flags>
 
 flags:
   --no-color|-n     don't use ANSI color codes when printing the selected entry
+  --open|-o         open the first url listed for the selected snippet in your
+                    default web browser
   --clip|-c         copy the selected entry to the system clipboard instead of
                     printing it to the terminal (implies --no-color)
   --help|-h         display this help message
@@ -95,7 +106,7 @@ function generate_stubs {
 
 
 function ansi_snippet {
-  local stub=$1 _heading=$2 _url=$3 _desc=$4
+  local stub=$1 _heading=$2 _url=$3 _desc=$4 _nc=$4
   local d p title abs_path fname_target raw
 
   fname_target="$(echo $stub | cut -d'|' -f1 | trim)"
@@ -107,7 +118,7 @@ function ansi_snippet {
         raw=$(sed -n "/#[[:space:]]*$title/,/^--/p" $p)
         if [ -n "$raw" ]; then
           echo $raw |
-          awk -v heading="$_heading" -v url="$_url" -v desc="$_desc" -v nc="$C[nc]" '
+          awk -v heading="$_heading" -v url="$_url" -v desc="$_desc" -v nc="$_nc" '
             /^#/  { printf heading; for (i=2; i<=NF; i++) printf $i " "; print nc }
             /^%/  { printf url; for (i=2; i<=NF; i++) printf $i " "; print nc }
             /^>/  { printf desc; for (i=2; i<=NF; i++) printf $i " "; print nc }
@@ -142,6 +153,7 @@ selection=$(
 
 case $1 in
   --no-color|-n) ansi_snippet $selection;;
+      --open|-o) open "$(ansi_snippet $selection | grep 'http' | head -n1)";;
       --clip|-c) ansi_snippet $selection | clipboard;;
-              *) ansi_snippet $selection $heading $url $desc;;
+              *) ansi_snippet $selection $heading $url $desc $nc;;
 esac

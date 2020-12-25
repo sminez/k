@@ -32,7 +32,7 @@ desc="$C[bold]"
 nc="$C[nc]"
 
 case $(uname -s) in
-  Darwin) 
+  Darwin)
     alias clipboard='pbcopy';
   ;;
   Linux)

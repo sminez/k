@@ -82,3 +82,21 @@
 > Documentation on the current unstable nightly features and how to
 > use them.
 --
+
+# The Rust Analyser
+? editor,vim,coc,LSP
+% https://github.com/rust-analyzer/rust-analyzer
+% https://github.com/fannheyward/coc-rust-analyzer
+
+> A language server protocol (LSP) implementation for Rust. If you are
+> using vim or neovim with the 'coc' plugin installed, coc-rust-analyzer
+> is a fantastic tool to install for working with rust!
+--
+
+# API guidelines
+? docs,styleguide
+% https://rust-lang.github.io/api-guidelines/
+
+> Rust has a well documented set of API guidelines for authors of crates
+> that are intended to be used as library code by other developers.
+--

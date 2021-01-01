@@ -83,3 +83,33 @@ $       -C /home/pi/tada68/avrdude_gpio.conf \
 $       -c pi_1 \
 $       -U flash:w:/home/pi/tada68/mass_bootloader_tada68.hex
 --
+
+# Quickly dump current git diff summary in the terminal
+? git,alias
+
+> Setting a git alias in your ~/.gitconfig means that this can be run by the git binary directly and that
+> it will show up in tab completion for zsh.
+
+$ # in ~/.gitconfig
+$ [alias]
+$     stat = !git --no-pager diff --stat
+
+$ $ git stat
+$ helpfiles/util.helpfile | 13 +++++++++++++
+$ 1 file changed, 13 insertions(+)
+--
+
+# Fuzzy search through git log and preview the diff for each commit
+? fzf,git,alias
+
+> Setting a git alias in your ~/.gitconfig means that this can be run by the git binary directly and that
+> it will show up in tab completion for zsh.
+> NOTE: This alias requires that you have the fzf binary installed
+
+$ # in ~/.gitconfig
+$ [alias]
+$     history = "!sh -c 'git log --oneline | fzf --preview-window=right:70% --preview \"git show {1} --color=always\"'"
+
+> This will open a split window with the commit log on the left (which you can fuzzy search through) and the diff for the
+> currently selected commit displayed and color highlighted on the right.
+--

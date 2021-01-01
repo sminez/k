@@ -113,3 +113,15 @@ $     history = "!sh -c 'git log --oneline | fzf --preview-window=right:70% --pr
 > This will open a split window with the commit log on the left (which you can fuzzy search through) and the diff for the
 > currently selected commit displayed and color highlighted on the right.
 --
+
+# Auto set the upstream branch when pushing a new git branch
+? git,push,shove
+
+> For those times when you just want to say "no really git, just push the branch. Come on!"
+> Setting a git alias in your ~/.gitconfig means that this can be run by the git binary directly and that
+> it will show up in tab completion for zsh.
+
+$ # in ~/.gitconfig
+$ [alias]
+$     shove = "!sh -c '$(git push 2>&1 | grep \"git push\")'"
+--

@@ -106,7 +106,7 @@ function generate_stubs {
 
 
 function ansi_snippet {
-  local stub=$1 _heading=$2 _url=$3 _desc=$4 _nc=$4
+  local stub=$1 _heading=$2 _url=$3 _desc=$4 _nc=$5
   local d p title abs_path fname_target raw
 
   fname_target="$(echo $stub | cut -d'|' -f1 | trim)"
@@ -137,10 +137,10 @@ function ansi_snippet {
 require_external fzf column
 
 
-if [[ "$1" == "___preview" ]]; then
-  ansi_snippet $2 $heading $url $desc
-  exit 0
-fi
+case $1 in
+  ___preview) ansi_snippet $2 $heading $url $desc $nc; exit 0;;
+   --help|-h) usage; exit 0;;
+esac
 
 selection=$(
   generate_stubs |

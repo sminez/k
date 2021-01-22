@@ -76,7 +76,7 @@
 --
 
 # The unstable book 
-? docs,guide,rederence
+? docs,guide,reference
 % https://doc.rust-lang.org/nightly/unstable-book/index.html
 
 > Documentation on the current unstable nightly features and how to
@@ -99,4 +99,11 @@
 
 > Rust has a well documented set of API guidelines for authors of crates
 > that are intended to be used as library code by other developers.
+--
+
+# Unofficial idioms and patterns guide
+? docs,guide,reference
+% https://rust-unofficial.github.io/patterns/intro.html
+
+> An unofficial (but very helpful!) idiom guide
 --

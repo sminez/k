@@ -248,3 +248,13 @@ $ autoload zmv
 > After that, you can do things like the following, and more (note the capture group):
 $ zmv '(*).txt' '$1.csv'
 --
+
+# Create and use GUI dialogues in a shell script
+? tool,program
+% https://help.gnome.org/users/zenity/2.32/
+
+> zenity lets you create and use common dialogues from withing a shell script
+> such as file selection, color selection, confirmation etc
+
+$ zenity --help-all  # show all available options
+--

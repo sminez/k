@@ -3,6 +3,7 @@
 
 > Check to make sure that your bluetooth controller is not currently disabled
 > using rfkill
+
 $ rfkill list
 $ 0: hci0: Bluetooth
 $         Soft blocked: yes
@@ -92,4 +93,11 @@ $ # see 'man pacman' as always for more info
 > Mainly here as a quick overview of various pacman commands but this is also useful
 > as a translation between different package manager semantics and a reminder of what
 > can be done without needing to fire up a browser.
+--
+
+# Setting up a new desktop entry
+? applications,launch
+% https://wiki.archlinux.org/index.php/Desktop_entries
+
+> User written desktop entries should be placed in ~/.local/share/application
 --

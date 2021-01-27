@@ -1,0 +1,68 @@
+# The Xlib programming manual
+? docs,manual,reference
+% https://tronche.com/gui/x/xlib/
+
+> This is a conversion of the original Xlib Programming manual to HTML so that
+> it can be viewed online. It makes a point about being presented "as is" so
+> there may be issues in places but it is a good place to start for looking up
+> the overall Xlib API, message struct layouts and semantics around the
+> different message types.
+--
+
+# freedesktop.org - software and specifications for desktop systems
+? docs,specification,reference
+% https://www.freedesktop.org/wiki/
+
+> A hub for multiple accepted conventions and specifications that describe file
+> formats, protocols and tooling that facilitate building a desktop environment.
+--
+
+# ICCCM message conventions
+? docs,reference
+% https://www.x.org/releases/X11R7.6/doc/xorg-docs/specs/ICCCM/icccm.html
+
+> ICCCM is the "Inter-Client Communication Conventions Manual". It defines a set
+> of conventions that many X11 based systems expect be upheld by both clients
+> and window managers.
+--
+
+# EWMH - Extended Window Manager Hints
+? docs,reference,spec
+% https://specifications.freedesktop.org/wm-spec/wm-spec-1.3.html
+
+> EWMH defines a set of extensions above and beyond ICCCM that can be used by
+> client programs and window managers to provide richer interaction and control.
+> The spec describes the messages involved, their meaning and how to send /
+> receive them.
+--
+
+# XLF conventions
+? font,reference,docs
+% https://www.x.org/releases/X11R7.6/doc/xorg-docs/specs/XLFD/xlfd.html
+
+> XLF is the "X Logical Font" description. It allows for programs to specify the
+> font resources they need in an X server implementation agnostic way.
+--
+
+# XKB configuration guide
+? docs,reference
+% https://www.x.org/releases/X11R7.6/doc/xorg-docs/input/XKB-Config.html
+
+> This document describes how to configure Xorg XKB from a user's point of view.
+> It covers basic configuration syntax and gives also a few examples.
+--
+
+# Fonts in X11
+? docs,reference
+% https://www.x.org/releases/X11R7.6/doc/xorg-docs/fonts/fonts.html
+
+> This document describes the support for fonts in X11 from a user perspective.
+--
+
+# The wmctrl cli tool
+? tool,docs
+% http://tripie.sweb.cz/utils/wmctrl/
+
+> A command line tool for issuing X client messages to manipulate state under
+> window managers that for EWMH conventions.
+--
